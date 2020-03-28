@@ -1,0 +1,9 @@
+r_substitution:
+    age_dist_file_path: '/age_dist_test.csv'
+    survey_source: 'polymod'
+    country: 'United Kingdom'
+    num_sample: 5
+    weight_by_dayofweek: 'TRUE'
+    matrices: '$matrices'
+    matrix: '$matrix'
+
