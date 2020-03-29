@@ -9,8 +9,8 @@ class SEIRModel:
                  N,
                  t_list,
                  suppression_policy,
-                 A_initial=np.array([10, 10, 10, 10, 10]),
-                 I_initial=np.array([10, 10, 10, 10, 10]),
+                 A_initial=np.array([1, 1, 1, 1, 1]),
+                 I_initial=np.array([1, 1, 1, 1, 1]),
                  R_initial=np.array([0, 0, 0, 0, 0]),
                  E_initial=np.array([0, 0, 0, 0, 0]),
                  HGen_initial=np.array([0, 0, 0, 0, 0]),
@@ -151,8 +151,7 @@ class SEIRModel:
         self.HICUVent_initial = HICUVent_initial
 
         self.S_initial = self.N - self.A_initial - self.I_initial - self.R_initial - self.E_initial \
-                         - self.D_initial - self.HGen_initial - self.HICU_initial \
-                         - self.HICUVent_initial
+                         - self.D_initial - self.HGen_initial - self.HICU_initial - self.HICUVent_initial
 
         # Epidemiological Parameters
         self.R0 = R0              # Reproduction Number
@@ -164,9 +163,7 @@ class SEIRModel:
         # These need to be made age dependent
         # R0 = beta * average contact rate * infectious period
         self.contact_rate = contact_rate
-        # contact rate weight calculated as probability contacts occur between two age groups based on age group size.
-        contact_freq_weight = (N[:, np.newaxis] * N) / (N[:, np.newaxis] * N).sum()
-        self.beta = self.R0 * self.delta / (self.contact_rate * contact_freq_weight).sum()
+        self.beta = self.R0 * self.delta / self.contact_rate.mean()
 
         self.mortality_rate = mortality_rate
         self.symptoms_to_hospital_days = symptoms_to_hospital_days
@@ -175,7 +172,7 @@ class SEIRModel:
         # Create age steps and groups to define age compartments
         self.age_step = age_cutoff[1:] - age_cutoff[:-1]
         self.age_step *= 365   # the model is using day as time unit
-        self.age_step = np.insert(self.age_step, -1, 100 - age_cutoff[-1])
+        self.age_step = np.insert(self.age_step, -1, 100*365 - age_cutoff[-1])
         self.age_group = list(zip(list(age_cutoff[:-1]), list(age_cutoff[1:])))
         self.age_group.append((age_cutoff[-1], 100))
 
@@ -242,7 +239,6 @@ class SEIRModel:
 
         preferred_num_of_contact = self.contact_rate * N # preferred number of contact between two age groups
         contact_matrix = preferred_num_of_contact * preferred_num_of_contact.T/ preferred_num_of_contact.sum()
-
         return contact_matrix
 
     def _time_step(self, y, t):
@@ -275,7 +271,7 @@ class SEIRModel:
         total_ppl_with_contact = S + E + A + I + R
         contact_matrix = self._get_contact_matrix(total_ppl_with_contact)
         frac_infected = (self.kappa * I + A) / total_ppl_with_contact
-        number_exposed = (self.beta * self.suppression_policy(t) * contact_matrix * frac_infected).sum(axis=1)
+        number_exposed = (self.beta * self.suppression_policy(t) * S * contact_matrix * frac_infected).sum(axis=1)
         age_in_S, age_out_S = self._aging_rate(S)
         dSdt = age_in_S - number_exposed - age_out_S
 
