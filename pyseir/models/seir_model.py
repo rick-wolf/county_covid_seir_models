@@ -274,7 +274,7 @@ class SEIRModel:
         # Effective contact rate * those that get exposed * those susceptible.
         total_ppl_with_contact = S + E + A + I + R
         contact_matrix = self._get_contact_matrix(total_ppl_with_contact)
-        frac_infected = (self.kappa*I + A) / total_ppl_with_contact
+        frac_infected = (self.kappa * I + A) / total_ppl_with_contact
         number_exposed = (self.beta * self.suppression_policy(t) * contact_matrix * frac_infected).sum(axis=1)
         age_in_S, age_out_S = self._aging_rate(S)
         dSdt = age_in_S - number_exposed - age_out_S
