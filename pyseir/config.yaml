@@ -1,5 +1,6 @@
+contact_matrices_r_script_path: '/Users/xzhang/Documents/covid/county_covid_seir_models/pyseir/models/contact_matrices.r'
 r_substitution:
-    age_dist_file_path: '/age_dist_test.csv'
+    age_dist_file_path: '/Users/xzhang/Documents/covid/county_covid_seir_models/pyseir/age_dist_test.csv'
     survey_source: 'polymod'
     country: 'United Kingdom'
     num_sample: 5

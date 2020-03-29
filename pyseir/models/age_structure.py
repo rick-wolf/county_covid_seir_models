@@ -18,11 +18,9 @@ def extract_contact_matrices(config):
 
     """
 
-    r_script_path = os.path.join(THIS_FILE_PATH, 'contact_matrices.r')
+    r_script_path = config['contact_matrices_r_script_path']
     r_script = Template(open(r_script_path, 'r').read()).substitute(config['r_substitution'])
     r = R()
     r.run(r_script)
 
     return r.mr, r.m['participants']
-
-
