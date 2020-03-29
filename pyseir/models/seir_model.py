@@ -174,6 +174,7 @@ class SEIRModel:
 
         # Create age steps and groups to define age compartments
         self.age_step = age_cutoff[1:] - age_cutoff[:-1]
+        self.age_step *= 365   # the model is using day as time unit
         self.age_step = np.insert(self.age_step, -1, 100 - age_cutoff[-1])
         self.age_group = list(zip(list(age_cutoff[:-1]), list(age_cutoff[1:])))
         self.age_group.append((age_cutoff[-1], 100))
