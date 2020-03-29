@@ -9,6 +9,10 @@ THIS_FILE_PATH = os.path.dirname(os.path.realpath('__file__'))
 def get_age_distribution():
     return None
 
+def get_risk_profile_by_age():
+    return None
+
+
 def extract_contact_matrices(config):
     """
 
