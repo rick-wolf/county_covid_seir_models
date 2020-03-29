@@ -226,23 +226,24 @@ class SEIRModel:
 
     def _get_contact_matrix(self, N):
         '''
-        This calculates the probability that contacts occurs between age group i and j
-        It is assumed that contacts only occur among with populations: S, A, I, and R
-
+        This calculates the probability that contacts occurs between two age groups.
         ref: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4002176/
 
         Parameters
         ----------
         N : np.array
             Population size by age group
+
+        Returns
+        -------
+        contact_matrix: np.array
+            Contact rate between age groups, with shape (number of age groups, number of age groups)
         '''
 
-        preferred_num_of_contact = self.contact_rate * N #
+        preferred_num_of_contact = self.contact_rate * N # preferred number of contact between two age groups
         contact_matrix = preferred_num_of_contact * preferred_num_of_contact.T/ preferred_num_of_contact.sum()
 
         return contact_matrix
-
-
 
     def _time_step(self, y, t):
         """
@@ -271,7 +272,7 @@ class SEIRModel:
         #    this
 
         # Effective contact rate * those that get exposed * those susceptible.
-        total_ppl_with_contact = S + I + A + R
+        total_ppl_with_contact = S + E + A + I + R
         contact_matrix = self._get_contact_matrix(total_ppl_with_contact)
         frac_infected = (self.kappa*I + A) / total_ppl_with_contact
         number_exposed = (self.beta * self.suppression_policy(t) * contact_matrix * frac_infected).sum(axis=1)
